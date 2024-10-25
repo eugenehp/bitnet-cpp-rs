@@ -28,10 +28,11 @@ openmp = ["bitnet-cpp-sys/openmp"]
 sampler = []
 
 
-[target.'cfg(all(target_os = "macos", any(target_arch = "aarch64", target_arch = "arm64")))'.dependencies]
-bitnet-cpp-sys = { path = "../bitnet-cpp-sys", version = "0.0.1", features = [
-    "metal",
-] }
+# TODO(eugene): fix me. BitNet doesn't have Metal implementation yet.
+# [target.'cfg(all(target_os = "macos", any(target_arch = "aarch64", target_arch = "arm64")))'.dependencies]
+# bitnet-cpp-sys = { path = "../bitnet-cpp-sys", version = "0.0.1", features = [
+#     "metal",
+# ] }
 
 [lints]
 workspace = true

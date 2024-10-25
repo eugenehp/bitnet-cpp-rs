@@ -24,7 +24,9 @@ pub mod session;
 /// Safe wrapper around `llama_context`.
 #[allow(clippy::module_name_repetitions)]
 pub struct LlamaContext<'a> {
-    pub(crate) context: NonNull<bitnet_cpp_sys::llama_context>,
+    // pub(crate) context: NonNull<bitnet_cpp_sys::llama_context>,
+    // TODO(eugene): fix me, added new sampler that uses context
+    pub context: NonNull<bitnet_cpp_sys::llama_context>,
     /// a reference to the contexts model.
     pub model: &'a LlamaModel,
     initialized_logits: Vec<i32>,

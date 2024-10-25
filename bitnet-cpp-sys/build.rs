@@ -250,6 +250,12 @@ fn main() {
         config.define("GGML_BLAS", "OFF");
     }
 
+    if cfg!(all(target_os = "macos", feature = "metal")) {
+        config.define("GGML_METAL", "ON");
+    }else {
+        config.define("GGML_METAL", "OFF");
+    }
+
     if cfg!(windows) {
         config.static_crt(static_crt);
     }

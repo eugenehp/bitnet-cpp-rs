@@ -15,6 +15,11 @@ use bitnet_cpp::model::params::LlamaModelParams;
 use bitnet_cpp::model::LlamaModel;
 use bitnet_cpp::model::{AddBos, Special};
 use bitnet_cpp::token::data_array::LlamaTokenDataArray;
+use bitnet_cpp::token::LlamaToken;
+use bitnet_cpp_sys::{
+    llama_sampler_apply, llama_sampler_chain_add, llama_sampler_chain_default_params,
+    llama_sampler_chain_init, llama_sampler_init_greedy, llama_sampler_sample,
+};
 use std::io::Write;
 
 #[allow(clippy::cast_possible_wrap, clippy::cast_possible_truncation)]
@@ -53,16 +58,40 @@ fn main() {
 
     // The `Decoder`
     let mut decoder = encoding_rs::UTF_8.new_decoder();
+    let params = unsafe { llama_sampler_chain_default_params() };
+    let mut smpl = unsafe { llama_sampler_chain_init(params) };
+
+    // https://github.com/ggerganov/llama.cpp/blob/master/examples/simple/simple.cpp#L124
+    unsafe {
+        llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
+    };
 
     while n_cur <= n_len {
         // sample the next token
         {
             let candidates = ctx.candidates_ith(batch.n_tokens() - 1);
 
-            let candidates_p = LlamaTokenDataArray::from_iter(candidates, false);
+            let mut candidates_p = LlamaTokenDataArray::from_iter(candidates, false);
 
             // sample the most likely token
-            let new_token_id = ctx.sample_token_greedy(candidates_p);
+            // let new_token_id = ctx.sample_token_greedy(candidates_p);
+            // new_token_id = llama_sampler_sample(smpl, ctx, -1);
+            let mut data_arr = bitnet_cpp_sys::llama_token_data_array {
+                data: candidates_p
+                    .data
+                    .as_mut_ptr()
+                    .cast::<bitnet_cpp_sys::llama_token_data>(),
+                size: candidates_p.data.len(),
+                selected: -1,
+                sorted: candidates_p.sorted,
+            };
+
+            unsafe {
+                llama_sampler_apply(smpl, &mut data_arr);
+            };
+
+            let new_token = unsafe { llama_sampler_sample(smpl, ctx.context.as_ptr(), -1) };
+            let new_token_id = LlamaToken::new(new_token);
 
             // is it an end of stream?
             if new_token_id == model.token_eos() {

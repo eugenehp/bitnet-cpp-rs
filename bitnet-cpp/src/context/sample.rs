@@ -63,6 +63,7 @@ impl LlamaContext<'_> {
     //             .as_mut_ptr()
     //             .cast::<bitnet_cpp_sys::llama_token_data>(),
     //         size: token_data.data.len(),
+    //         selected: -1,
     //         sorted: token_data.sorted,
     //     };
     //     let token = unsafe {
