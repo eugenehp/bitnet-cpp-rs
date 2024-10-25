@@ -3,7 +3,7 @@ name = "bitnet-cpp"
 description = "bitnet.cpp bindings for Rust"
 version = "0.0.1"
 edition = "2021"
-license = "MIT OR Apache-2.0"
+license = "MIT"
 repository = "https://github.com/eugenehp/bitnet-cpp-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

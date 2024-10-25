@@ -11,6 +11,9 @@ include = [
     "wrapper.h",
     "build.rs",
     "/src",
+    
+    "/bitnet",
+    "/bitnet/**/CMakeLists.txt",
 
     "/bitnet/3rdparty/llama.cpp/common/*.h",
     "/bitnet/3rdparty/llama.cpp/common/*.hpp",
