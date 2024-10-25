@@ -1,0 +1,70 @@
+[package]
+name = "bitnet-cpp-sys"
+description = "Low Level Bindings to bitnet.cpp"
+version = "0.0.1"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/eugenehp/bitnet-cpp-rs"
+links = "llama"
+
+include = [
+    "wrapper.h",
+    "build.rs",
+    "/src",
+
+    "/bitnet/3rdparty/llama.cpp/common/*.h",
+    "/bitnet/3rdparty/llama.cpp/common/*.hpp",
+    "/bitnet/3rdparty/llama.cpp/common/*.cpp",
+    "/bitnet/3rdparty/llama.cpp/ggml/include/*.h",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/*.h",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/*.c",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/*.cpp",
+    "/bitnet/3rdparty/llama.cpp/src/*.h",
+    "/bitnet/3rdparty/llama.cpp/src/*.cpp",
+
+    "/bitnet/3rdparty/llama.cpp/convert_hf_to_gguf.py",
+
+    "/bitnet/3rdparty/llama.cpp/common/build-info.cpp.in",
+
+    "/bitnet/3rdparty/llama.cpp/ggml/src/ggml-cuda.cu",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/ggml-metal.m",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/ggml-metal.metal",
+
+    "/bitnet/3rdparty/llama.cpp/include/llama.h",
+
+    "/bitnet/3rdparty/llama.cpp/ggml/src/ggml-cuda/**/*",
+
+    "/bitnet/3rdparty/llama.cpp/ggml/src/vulkan-shaders/**/*",
+
+    "/bitnet/3rdparty/llama.cpp/ggml/src/llamafile/sgemm.h",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/llamafile/sgemm.cpp",
+
+    "/bitnet/3rdparty/llama.cpp/pocs",
+
+    "/bitnet/3rdparty/llama.cpp/CMakeLists.txt",
+    "/bitnet/3rdparty/llama.cpp/common/CMakeLists.txt",
+    "/bitnet/3rdparty/llama.cpp/ggml/CMakeLists.txt",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/CMakeLists.txt",
+    "/bitnet/3rdparty/llama.cpp/ggml/src/vulkan-shaders/CMakeLists.txt",
+    "/bitnet/3rdparty/llama.cpp/src/CMakeLists.txt",
+
+    "/bitnet/3rdparty/llama.cpp/cmake",
+    "/bitnet/3rdparty/llama.cpp/ggml/cmake",
+    "/bitnet/3rdparty/llama.cpp/common/cmake",
+]
+
+[dependencies]
+
+[build-dependencies]
+bindgen = { workspace = true }
+cc = { workspace = true, features = ["parallel"] }
+cmake = "0.1"
+glob = "0.3.1"
+
+[features]
+cuda = []
+metal = []
+dynamic-link = []
+vulkan = []
+native = []
+openmp = []

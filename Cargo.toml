@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = [
+    "bitnet-cpp-sys",
+]
+
+[workspace.dependencies]
+bindgen = "0.70.1"
+cc = "1.1.31"
