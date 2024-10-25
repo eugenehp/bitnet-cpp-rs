@@ -1,0 +1,44 @@
+[package]
+name = "bitnet-cpp"
+description = "bitnet.cpp bindings for Rust"
+version = "0.0.1"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/eugenehp/bitnet-cpp-rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+enumflags2 = "0.7.10"
+bitnet-cpp-sys = { path = "../bitnet-cpp-sys", version = "0.0.1" }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+encoding_rs = { workspace = true }
+
+[features]
+default = ["openmp"]
+cuda = ["bitnet-cpp-sys/cuda"]
+metal = ["bitnet-cpp-sys/metal"]
+dynamic-link = ["bitnet-cpp-sys/dynamic-link"]
+vulkan = ["bitnet-cpp-sys/vulkan"]
+native = ["bitnet-cpp-sys/native"]
+openmp = ["bitnet-cpp-sys/openmp"]
+sampler = []
+
+
+[target.'cfg(all(target_os = "macos", any(target_arch = "aarch64", target_arch = "arm64")))'.dependencies]
+bitnet-cpp-sys = { path = "../bitnet-cpp-sys", version = "0.0.1", features = [
+    "metal",
+] }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+features = ["sampler"]
+
+[[example]]
+name = "usage"
+path = "../examples/usage.rs"

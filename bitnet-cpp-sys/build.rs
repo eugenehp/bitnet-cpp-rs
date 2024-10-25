@@ -200,6 +200,7 @@ fn main() {
         .clang_arg(format!("-I{}", bitnet_dst.join("include").display()))
         .clang_arg(format!("-I{}", bitnet_dst.join("3rdparty/llama.cpp/include").display()))
         .clang_arg(format!("-I{}", bitnet_dst.join("3rdparty/llama.cpp/ggml/include").display()))
+        // .clang_arg("-std=c++14")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .derive_partialeq(true)
         .allowlist_function("ggml_.*")
@@ -225,7 +226,6 @@ fn main() {
     // Build with Cmake
     let mut config = Config::new(&bitnet_dst);
 
-    config.profile("Release");
     config.out_dir(bitnet_dst.parent().unwrap());
 
     // Would require extra source files to pointlessly
@@ -286,92 +286,93 @@ fn main() {
         .always_configure(false);
 
     // cmake --build build --config Release
+    config.profile("Release");
     let build_dir = config.build(); // breaks
 
-    // // Search paths
-    // println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
-    // println!("cargo:rustc-link-search={}", build_dir.display());
+    // Search paths
+    println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
+    println!("cargo:rustc-link-search={}", build_dir.display());
 
-    // // Link libraries
-    // let llama_libs_kind = if build_shared_libs { "dylib" } else { "static" };
-    // let llama_libs = extract_lib_names(&out_dir, build_shared_libs);
+    // Link libraries
+    let llama_libs_kind = if build_shared_libs { "dylib" } else { "static" };
+    let llama_libs = extract_lib_names(&out_dir, build_shared_libs);
 
-    // for lib in llama_libs {
-    //     debug_log!(
-    //         "LINK {}",
-    //         format!("cargo:rustc-link-lib={}={}", llama_libs_kind, lib)
-    //     );
-    //     println!(
-    //         "{}",
-    //         format!("cargo:rustc-link-lib={}={}", llama_libs_kind, lib)
-    //     );
-    // }
+    for lib in llama_libs {
+        debug_log!(
+            "LINK {}",
+            format!("cargo:rustc-link-lib={}={}", llama_libs_kind, lib)
+        );
+        println!(
+            "{}",
+            format!("cargo:rustc-link-lib={}={}", llama_libs_kind, lib)
+        );
+    }
 
-    // // OpenMP
-    // if cfg!(feature = "openmp") {
-    //     if target.contains("gnu") {
-    //         println!("cargo:rustc-link-lib=gomp");
-    //     }
-    // }
+    // OpenMP
+    if cfg!(feature = "openmp") {
+        if target.contains("gnu") {
+            println!("cargo:rustc-link-lib=gomp");
+        }
+    }
 
-    // // Windows debug
-    // if cfg!(all(debug_assertions, windows)) {
-    //     println!("cargo:rustc-link-lib=dylib=msvcrtd");
-    // }
+    // Windows debug
+    if cfg!(all(debug_assertions, windows)) {
+        println!("cargo:rustc-link-lib=dylib=msvcrtd");
+    }
 
-    // // macOS
-    // if cfg!(target_os = "macos") {
-    //     println!("cargo:rustc-link-lib=framework=Foundation");
-    //     println!("cargo:rustc-link-lib=framework=Metal");
-    //     println!("cargo:rustc-link-lib=framework=MetalKit");
-    //     println!("cargo:rustc-link-lib=framework=Accelerate");
-    //     println!("cargo:rustc-link-lib=c++");
-    // }
+    // macOS
+    if cfg!(target_os = "macos") {
+        println!("cargo:rustc-link-lib=framework=Foundation");
+        println!("cargo:rustc-link-lib=framework=Metal");
+        println!("cargo:rustc-link-lib=framework=MetalKit");
+        println!("cargo:rustc-link-lib=framework=Accelerate");
+        println!("cargo:rustc-link-lib=c++");
+    }
 
-    // // Linux
-    // if cfg!(target_os = "linux") {
-    //     println!("cargo:rustc-link-lib=dylib=stdc++");
-    // }
+    // Linux
+    if cfg!(target_os = "linux") {
+        println!("cargo:rustc-link-lib=dylib=stdc++");
+    }
 
-    // if target.contains("apple") {
-    //     // On (older) OSX we need to link against the clang runtime,
-    //     // which is hidden in some non-default path.
-    //     //
-    //     // More details at https://github.com/alexcrichton/curl-rust/issues/279.
-    //     if let Some(path) = macos_link_search_path() {
-    //         println!("cargo:rustc-link-lib=clang_rt.osx");
-    //         println!("cargo:rustc-link-search={}", path);
-    //     }
-    // }
+    if target.contains("apple") {
+        // On (older) OSX we need to link against the clang runtime,
+        // which is hidden in some non-default path.
+        //
+        // More details at https://github.com/alexcrichton/curl-rust/issues/279.
+        if let Some(path) = macos_link_search_path() {
+            println!("cargo:rustc-link-lib=clang_rt.osx");
+            println!("cargo:rustc-link-search={}", path);
+        }
+    }
 
-    // // copy DLLs to target
-    // if build_shared_libs {
-    //     let libs_assets = extract_lib_assets(&out_dir);
-    //     for asset in libs_assets {
-    //         let asset_clone = asset.clone();
-    //         let filename = asset_clone.file_name().unwrap();
-    //         let filename = filename.to_str().unwrap();
-    //         let dst = target_dir.join(filename);
-    //         debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
-    //         if !dst.exists() {
-    //             std::fs::hard_link(asset.clone(), dst).unwrap();
-    //         }          
+    // copy DLLs to target
+    if build_shared_libs {
+        let libs_assets = extract_lib_assets(&out_dir);
+        for asset in libs_assets {
+            let asset_clone = asset.clone();
+            let filename = asset_clone.file_name().unwrap();
+            let filename = filename.to_str().unwrap();
+            let dst = target_dir.join(filename);
+            debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
+            if !dst.exists() {
+                std::fs::hard_link(asset.clone(), dst).unwrap();
+            }          
 
-    //         // Copy DLLs to examples as well
-    //         if target_dir.join("examples").exists() {
-    //             let dst = target_dir.join("examples").join(filename);
-    //             debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
-    //             if !dst.exists() {
-    //                 std::fs::hard_link(asset.clone(), dst).unwrap();
-    //             }
-    //         }
+            // Copy DLLs to examples as well
+            if target_dir.join("examples").exists() {
+                let dst = target_dir.join("examples").join(filename);
+                debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
+                if !dst.exists() {
+                    std::fs::hard_link(asset.clone(), dst).unwrap();
+                }
+            }
 
-    //         // Copy DLLs to target/profile/deps as well for tests
-    //         let dst = target_dir.join("deps").join(filename);
-    //         debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
-    //         if !dst.exists() {
-    //             std::fs::hard_link(asset.clone(), dst).unwrap();
-    //         }
-    //     }
-    // }
+            // Copy DLLs to target/profile/deps as well for tests
+            let dst = target_dir.join("deps").join(filename);
+            debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
+            if !dst.exists() {
+                std::fs::hard_link(asset.clone(), dst).unwrap();
+            }
+        }
+    }
 }
