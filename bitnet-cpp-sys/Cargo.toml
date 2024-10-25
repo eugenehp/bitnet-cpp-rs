@@ -16,7 +16,7 @@ include = [
     "/bitnet/include",
     "/bitnet/preset_kernels",
     "/bitnet/utils",
-    "/bitnet/**/CMakeLists.txt",
+    "/bitnet/CMakeLists.txt",
 
     "/bitnet/3rdparty/llama.cpp/common/*.h",
     "/bitnet/3rdparty/llama.cpp/common/*.hpp",
@@ -27,6 +27,8 @@ include = [
     "/bitnet/3rdparty/llama.cpp/ggml/src/*.cpp",
     "/bitnet/3rdparty/llama.cpp/src/*.h",
     "/bitnet/3rdparty/llama.cpp/src/*.cpp",
+    
+    "/bitnet/3rdparty/llama.cpp/examples", # TODO(eugene): remove this from the crate
 
     "/bitnet/3rdparty/llama.cpp/convert_hf_to_gguf.py",
 
