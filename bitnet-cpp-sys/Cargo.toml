@@ -12,7 +12,10 @@ include = [
     "build.rs",
     "/src",
     
-    "/bitnet",
+    "/bitnet/src",
+    "/bitnet/include",
+    "/bitnet/preset_kernels",
+    "/bitnet/utils",
     "/bitnet/**/CMakeLists.txt",
 
     "/bitnet/3rdparty/llama.cpp/common/*.h",

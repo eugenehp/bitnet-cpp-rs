@@ -26,6 +26,15 @@ pip install -r requirements.txt
 python setup_env.py --hf-repo HF1BitLLM/Llama3-8B-1.58-100B-tokens -q i2_s # only needs gen_code() 
 ```
 
+## Roadmap
+
+- [ ] minimize crate size
+- [ ] rewrite sampler
+- [ ] look into Metal implementation of MatMul kernerls for BitNet
+- [ ] add more examples
+- [ ] replace all remaining python from BitNet repo
+- [ ] add better division between `arm64` and `x86_64`
+
 ## Thanks
 
 Heavily inspired by [llama-cpp-rs](https://github.com/utilityai/llama-cpp-rs)
