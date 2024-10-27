@@ -39,7 +39,7 @@ checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
 
 [[package]]
 name = "bitnet-cpp"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "bitnet-cpp-sys",
  "encoding_rs",
@@ -50,7 +50,7 @@ dependencies = [
 
 [[package]]
 name = "bitnet-cpp-sys"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "bindgen",
  "cc",
