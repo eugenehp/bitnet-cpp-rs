@@ -142,19 +142,22 @@ fn macos_link_search_path() -> Option<String> {
     None
 }
 
-const BITNET_DIR:&str = "bitnet";
+const BITNET_DIR: &str = "bitnet";
 
 #[cfg(target_os = "windows")]
-const OS_EXTRA_ARGS:[(&str,&str);1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
+const OS_EXTRA_ARGS: [(&str, &str); 1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
 
 #[cfg(target_os = "linux")]
-const OS_EXTRA_ARGS:[(&str, &str);2] = [("CMAKE_C_COMPILER","clang"), ("CMAKE_CXX_COMPILER", "clang++")];
+const OS_EXTRA_ARGS: [(&str, &str); 2] = [
+    ("CMAKE_C_COMPILER", "clang"),
+    ("CMAKE_CXX_COMPILER", "clang++"),
+];
 
 #[cfg(target_arch = "aarch64")]
-const COMPILER_EXTRA_ARGS:(&str, &str) = ("BITNET_ARM_TL1", "ON");
+const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_ARM_TL1", "ON");
 
 #[cfg(target_arch = "x86_64")]
-const COMPILER_EXTRA_ARGS:(&str, &str) = ("BITNET_X86_TL2", "ON");
+const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_X86_TL2", "ON");
 
 fn main() {
     let target = env::var("TARGET").unwrap();
@@ -184,7 +187,7 @@ fn main() {
         debug_log!("Copy {} to {}", bitnet_src.display(), bitnet_dst.display());
         copy_folder(&bitnet_src, &bitnet_dst);
     }
-    
+
     // Speed up build
     env::set_var(
         "CMAKE_BUILD_PARALLEL_LEVEL",
@@ -197,9 +200,18 @@ fn main() {
     // Bindings
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
+        .generate_comments(true)
+        .clang_arg("-xc++")
+        .clang_arg("-std=c++11")
         .clang_arg(format!("-I{}", bitnet_dst.join("include").display()))
-        .clang_arg(format!("-I{}", bitnet_dst.join("3rdparty/llama.cpp/include").display()))
-        .clang_arg(format!("-I{}", bitnet_dst.join("3rdparty/llama.cpp/ggml/include").display()))
+        .clang_arg(format!(
+            "-I{}",
+            bitnet_dst.join("3rdparty/llama.cpp/include").display()
+        ))
+        .clang_arg(format!(
+            "-I{}",
+            bitnet_dst.join("3rdparty/llama.cpp/ggml/include").display()
+        ))
         // .clang_arg("-std=c++14")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .derive_partialeq(true)
@@ -207,10 +219,11 @@ fn main() {
         .allowlist_type("ggml_.*")
         .allowlist_function("llama_.*")
         .allowlist_type("llama_.*")
+        .allowlist_item("LLAMA_.*")
+        .use_core()
         .prepend_enum_name(false)
         .generate()
         .expect("Failed to generate bindings");
-
 
     // Write the generated bindings to an output file
     let bindings_path = out_dir.join("bindings.rs");
@@ -221,7 +234,6 @@ fn main() {
     println!("cargo:rerun-if-changed=wrapper.h");
 
     debug_log!("Bindings Created");
-    
 
     // Build with Cmake
     let mut config = Config::new(&bitnet_dst);
@@ -238,7 +250,11 @@ fn main() {
     #[cfg(any(target_arch = "aarch64", target_arch = "x86_64"))]
     {
         config.define(COMPILER_EXTRA_ARGS.0, COMPILER_EXTRA_ARGS.1);
-        debug_log!("COMPILER_EXTRA_ARGS: {}={}", COMPILER_EXTRA_ARGS.0, COMPILER_EXTRA_ARGS.1);
+        debug_log!(
+            "COMPILER_EXTRA_ARGS: {}={}",
+            COMPILER_EXTRA_ARGS.0,
+            COMPILER_EXTRA_ARGS.1
+        );
     }
 
     config.define(
@@ -252,19 +268,19 @@ fn main() {
 
     if cfg!(all(target_os = "macos", feature = "metal")) {
         config.define("GGML_METAL", "ON");
-    }else {
+    } else {
         config.define("GGML_METAL", "OFF");
     }
 
     if cfg!(windows) {
         config.static_crt(static_crt);
     }
-    
 
     if cfg!(feature = "vulkan") {
         config.define("GGML_VULKAN", "ON");
         if cfg!(windows) {
-            let vulkan_path = env::var("VULKAN_SDK").expect("Please install Vulkan SDK and ensure that VULKAN_SDK env variable is set");
+            let vulkan_path = env::var("VULKAN_SDK")
+                .expect("Please install Vulkan SDK and ensure that VULKAN_SDK env variable is set");
             let vulkan_lib_path = Path::new(&vulkan_path).join("Lib");
             println!("cargo:rustc-link-search={}", vulkan_lib_path.display());
             println!("cargo:rustc-link-lib=vulkan-1");
@@ -281,7 +297,7 @@ fn main() {
 
     if cfg!(feature = "openmp") {
         config.define("GGML_OPENMP", "ON");
-    }else {
+    } else {
         config.define("GGML_OPENMP", "OFF");
     }
 
@@ -362,7 +378,7 @@ fn main() {
             debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
             if !dst.exists() {
                 std::fs::hard_link(asset.clone(), dst).unwrap();
-            }          
+            }
 
             // Copy DLLs to examples as well
             if target_dir.join("examples").exists() {
