@@ -142,19 +142,47 @@ fn macos_link_search_path() -> Option<String> {
     None
 }
 
-const BITNET_DIR:&str = "bitnet";
+const BITNET_DIR: &str = "bitnet";
 
 #[cfg(target_os = "windows")]
-const OS_EXTRA_ARGS:[(&str,&str);1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
+const OS_EXTRA_ARGS: [(&str, &str); 1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
 
 #[cfg(target_os = "linux")]
-const OS_EXTRA_ARGS:[(&str, &str);2] = [("CMAKE_C_COMPILER","clang"), ("CMAKE_CXX_COMPILER", "clang++")];
+const OS_EXTRA_ARGS: [(&str, &str); 2] = [
+    ("CMAKE_C_COMPILER", "clang"),
+    ("CMAKE_CXX_COMPILER", "clang++"),
+];
 
 #[cfg(target_arch = "aarch64")]
-const COMPILER_EXTRA_ARGS:(&str, &str) = ("BITNET_ARM_TL1", "ON");
+const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_ARM_TL1", "ON");
 
 #[cfg(target_arch = "x86_64")]
-const COMPILER_EXTRA_ARGS:(&str, &str) = ("BITNET_X86_TL2", "ON");
+const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_X86_TL2", "ON");
+
+/// Install bitnet.cpp dependencies using pip.
+/// Since not everyone will want/need this, the build script won't fail if the dependencies are not installed.
+fn install_dependencies() {
+    if cfg!(windows) {
+        // TODO: This needs to be improved and tested for Windows, I've only tested it on Linux and MacOS
+        let _ = std::process::Command::new("pip")
+            .arg("install")
+            .arg("-r")
+            .arg("bitnet\requirements.txt")
+            .status();
+    } else {
+        let status = std::process::Command::new("sh")
+            .arg("-c")
+            .arg("./get-deps.sh")
+            .status();
+        if let Err(e) = status {
+            eprintln!("Failed to execute get-deps.sh: {}", e);
+        } else if !status.unwrap().success() {
+            eprintln!("The get-deps.sh script failed to install the dependencies.");
+        } else {
+            println!("Dependencies installed successfully.");
+        }
+    }
+}
 
 fn main() {
     let target = env::var("TARGET").unwrap();
@@ -180,11 +208,13 @@ fn main() {
     debug_log!("OUT_DIR: {}", out_dir.display());
     debug_log!("BUILD_SHARED: {}", build_shared_libs);
 
+    install_dependencies();
+
     if !bitnet_dst.exists() {
         debug_log!("Copy {} to {}", bitnet_src.display(), bitnet_dst.display());
         copy_folder(&bitnet_src, &bitnet_dst);
     }
-    
+
     // Speed up build
     env::set_var(
         "CMAKE_BUILD_PARALLEL_LEVEL",
@@ -198,8 +228,14 @@ fn main() {
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
         .clang_arg(format!("-I{}", bitnet_dst.join("include").display()))
-        .clang_arg(format!("-I{}", bitnet_dst.join("3rdparty/llama.cpp/include").display()))
-        .clang_arg(format!("-I{}", bitnet_dst.join("3rdparty/llama.cpp/ggml/include").display()))
+        .clang_arg(format!(
+            "-I{}",
+            bitnet_dst.join("3rdparty/llama.cpp/include").display()
+        ))
+        .clang_arg(format!(
+            "-I{}",
+            bitnet_dst.join("3rdparty/llama.cpp/ggml/include").display()
+        ))
         // .clang_arg("-std=c++14")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .derive_partialeq(true)
@@ -211,7 +247,6 @@ fn main() {
         .generate()
         .expect("Failed to generate bindings");
 
-
     // Write the generated bindings to an output file
     let bindings_path = out_dir.join("bindings.rs");
     bindings
@@ -221,7 +256,6 @@ fn main() {
     println!("cargo:rerun-if-changed=wrapper.h");
 
     debug_log!("Bindings Created");
-    
 
     // Build with Cmake
     let mut config = Config::new(&bitnet_dst);
@@ -238,7 +272,11 @@ fn main() {
     #[cfg(any(target_arch = "aarch64", target_arch = "x86_64"))]
     {
         config.define(COMPILER_EXTRA_ARGS.0, COMPILER_EXTRA_ARGS.1);
-        debug_log!("COMPILER_EXTRA_ARGS: {}={}", COMPILER_EXTRA_ARGS.0, COMPILER_EXTRA_ARGS.1);
+        debug_log!(
+            "COMPILER_EXTRA_ARGS: {}={}",
+            COMPILER_EXTRA_ARGS.0,
+            COMPILER_EXTRA_ARGS.1
+        );
     }
 
     config.define(
@@ -252,19 +290,19 @@ fn main() {
 
     if cfg!(all(target_os = "macos", feature = "metal")) {
         config.define("GGML_METAL", "ON");
-    }else {
+    } else {
         config.define("GGML_METAL", "OFF");
     }
 
     if cfg!(windows) {
         config.static_crt(static_crt);
     }
-    
 
     if cfg!(feature = "vulkan") {
         config.define("GGML_VULKAN", "ON");
         if cfg!(windows) {
-            let vulkan_path = env::var("VULKAN_SDK").expect("Please install Vulkan SDK and ensure that VULKAN_SDK env variable is set");
+            let vulkan_path = env::var("VULKAN_SDK")
+                .expect("Please install Vulkan SDK and ensure that VULKAN_SDK env variable is set");
             let vulkan_lib_path = Path::new(&vulkan_path).join("Lib");
             println!("cargo:rustc-link-search={}", vulkan_lib_path.display());
             println!("cargo:rustc-link-lib=vulkan-1");
@@ -281,7 +319,7 @@ fn main() {
 
     if cfg!(feature = "openmp") {
         config.define("GGML_OPENMP", "ON");
-    }else {
+    } else {
         config.define("GGML_OPENMP", "OFF");
     }
 
@@ -362,7 +400,7 @@ fn main() {
             debug_log!("HARD LINK {} TO {}", asset.display(), dst.display());
             if !dst.exists() {
                 std::fs::hard_link(asset.clone(), dst).unwrap();
-            }          
+            }
 
             // Copy DLLs to examples as well
             if target_dir.join("examples").exists() {
