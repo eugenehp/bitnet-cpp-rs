@@ -3,6 +3,8 @@ use glob::glob;
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::thread::sleep;
+use std::time::Duration;
 
 macro_rules! debug_log {
     ($($arg:tt)*) => {
@@ -10,6 +12,16 @@ macro_rules! debug_log {
             println!("cargo:warning=[DEBUG] {}", format!($($arg)*));
         }
     };
+}
+
+fn run_shell(path: PathBuf) {
+    let dir = std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
+    let program = dir.join(path);
+    // println!("cargo:warning=[DEBUG] {:?}", program);
+    let mut child = Command::new(program).spawn().unwrap();
+    child.wait().unwrap();
+
+    // sleep(Duration::from_secs(1));
 }
 
 fn get_cargo_target_dir() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
@@ -159,7 +171,9 @@ const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_ARM_TL1", "ON");
 #[cfg(target_arch = "x86_64")]
 const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_X86_TL2", "ON");
 
-fn main() {
+fn main2() {
+    // apply patches
+
     let target = env::var("TARGET").unwrap();
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
@@ -397,4 +411,9 @@ fn main() {
             }
         }
     }
+}
+
+fn main() {
+    run_shell("patches/apply.sh".into());
+    run_shell("patches/clean.sh".into());
 }
