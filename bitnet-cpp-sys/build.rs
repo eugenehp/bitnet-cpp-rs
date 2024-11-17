@@ -452,12 +452,13 @@ fn get_patches() {
 
     let patches: Vec<Patch<'_>> = Patch::from_multiple(&content).unwrap();
 
-    let patch = patches.first().unwrap().clone();
-    let path = patch.new.path.to_string().replace("b/", ""); // "b/ggml/CMakeLists.txt" -> "ggml/CMakeLists.txt"
-    let path = llama_cpp_root.join(path);
-    let old_content = fs::read_to_string(path.clone()).unwrap();
-    let patched_content = apply(old_content, patch);
-    fs::write(path, patched_content).unwrap();
+    patches.iter().for_each(|patch| {
+        let path = patch.new.path.to_string().replace("b/", ""); // "b/ggml/CMakeLists.txt" -> "ggml/CMakeLists.txt"
+        let path = llama_cpp_root.join(path);
+        let old_content = fs::read_to_string(path.clone()).unwrap();
+        let patched_content = apply(old_content, patch.clone());
+        fs::write(path, patched_content).unwrap();
+    });
 
     // println!("cargo:warning=[DEBUG] {:?}", patches);
 }
