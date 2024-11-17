@@ -13,3 +13,13 @@ index 1b425ede..6fd942a4 100644
  
  set_target_properties(ggml PROPERTIES PUBLIC_HEADER "${GGML_PUBLIC_HEADERS}")
  #if (GGML_METAL)
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 157d9c86..c44646ec 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -198,4 +198,4 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/llama.pc"
+ #
+ 
+ add_subdirectory(common)
+-add_subdirectory(examples)
++# add_subdirectory(examples)
