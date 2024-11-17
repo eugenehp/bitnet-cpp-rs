@@ -186,9 +186,13 @@ fn build() {
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
     let target_dir = get_cargo_target_dir().unwrap();
+
     let bitnet_dst = out_dir.join(BITNET_DIR);
-    let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("Failed to get CARGO_MANIFEST_DIR");
-    let bitnet_src = Path::new(&manifest_dir).join(BITNET_DIR);
+    let bitnet_src = Path::new(&CARGO_MANIFEST_DIR).join(BITNET_DIR);
+
+    let git_dst = out_dir.join("./.git");
+    let git_src = Path::new(&CARGO_MANIFEST_DIR).join("./.git");
+
     let build_shared_libs = cfg!(feature = "cuda") || cfg!(feature = "dynamic-link");
 
     let build_shared_libs = std::env::var("LLAMA_BUILD_SHARED_LIBS")
@@ -200,7 +204,7 @@ fn build() {
         .unwrap_or(false);
 
     debug_log!("TARGET: {}", target);
-    debug_log!("CARGO_MANIFEST_DIR: {}", manifest_dir);
+    debug_log!("CARGO_MANIFEST_DIR: {}", CARGO_MANIFEST_DIR);
     debug_log!("TARGET_DIR: {}", target_dir.display());
     debug_log!("OUT_DIR: {}", out_dir.display());
     debug_log!("BUILD_SHARED: {}", build_shared_libs);
@@ -208,6 +212,11 @@ fn build() {
     if !bitnet_dst.exists() {
         debug_log!("Copy {} to {}", bitnet_src.display(), bitnet_dst.display());
         copy_folder(&bitnet_src, &bitnet_dst);
+    }
+
+    if !git_dst.exists() {
+        debug_log!("Copy {} to {}", git_src.display(), git_dst.display());
+        copy_folder(&git_src, &git_dst);
     }
 
     // Speed up build
