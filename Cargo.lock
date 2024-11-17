@@ -321,9 +321,9 @@ checksum = "1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775"
 
 [[package]]
 name = "patch-apply"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6cb476e3054741609216f6ed7c50c0567f0ebe12897f77ae04556b4660bbf75"
+checksum = "bc262a5034a59b5a489bcbb1a6b9c8584683af8e0d6565879993365a12edfae1"
 dependencies = [
  "chrono",
  "nom",
