@@ -423,7 +423,7 @@ fn build() {
 
 fn main() {
     // TODO: apply patches on the features level of architecture and quantization type
-    // run_shell("patches/apply.sh".into());
+    run_shell("patches/apply.sh".into());
     build();
-    // run_shell("patches/clean.sh".into());
+    run_shell("patches/clean.sh".into());
 }
