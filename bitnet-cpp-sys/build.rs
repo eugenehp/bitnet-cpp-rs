@@ -211,6 +211,7 @@ fn macos_link_search_path() -> Option<String> {
 fn build() {
     let target = env::var("TARGET").unwrap();
     let out_dir = get_out_dir();
+    let src_dir = get_src_dir();
 
     let target_dir = get_cargo_target_dir().unwrap();
 
@@ -218,7 +219,7 @@ fn build() {
     let bitnet_src = Path::new(&CARGO_MANIFEST_DIR).join(BITNET_DIR);
 
     let patches_dst = out_dir.join(PATCHES_DIR);
-    let patches_src = Path::new(&CARGO_MANIFEST_DIR).join(PATCHES_DIR);
+    let patches_src = Path::new(&src_dir).join(PATCHES_DIR);
 
     let build_shared_libs = cfg!(feature = "cuda") || cfg!(feature = "dynamic-link");
 
