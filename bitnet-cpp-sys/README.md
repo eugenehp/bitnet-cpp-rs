@@ -62,7 +62,11 @@ Do a dry run:
 cargo publish --allow-dirty --dry-run 
 ```
 
-There's only one uncommited git change, that requires `allow-dirty` – `bitnet/3rdparty/llama.cpp/common/build-info.cpp`.
+Or you can simply remove `bitnet/3rdparty/llama.cpp/common/build-info.cpp` and run:
+
+```shell
+cargo publish --dry-run
+```
 
 ## License
 
