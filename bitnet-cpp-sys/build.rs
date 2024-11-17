@@ -15,7 +15,8 @@ macro_rules! debug_log {
     };
 }
 
-const CARGO_PKG_NAME: &str = env!("CARGO_PKG_NAME");
+// const CARGO_PKG_NAME: &str = env!("CARGO_PKG_NAME");
+const CARGO_PKG_NAME: &str = "bitnet-cpp-sys"; // this has to be hardcoded to enable `bitnet-cpp` build
 const CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 const BITNET_DIR: &str = "bitnet";
 const LLAMA_CPP_DIR: &str = "bitnet/3rdparty/llama.cpp";
