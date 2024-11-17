@@ -49,6 +49,14 @@ cargo clean && BUILD_DEBUG=true CMAKE_VERBOSE=true cargo build
 
 ## Publishing
 
+Check which files will be included in the published crate:
+
+```shell
+cargo package --list --allow-dirty
+```
+
+Do a dry run:
+
 ```shell
 cargo publish --allow-dirty --dry-run 
 ```
