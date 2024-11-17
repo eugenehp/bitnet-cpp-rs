@@ -7,18 +7,23 @@ See [bitnet-cpp](https://crates.io/crates/bitnet-cpp) for a safe API.
 
 ## Development
 
+
+
+Apply patches from the python generation:
+
+```shell
+./patches/apply.sh
+```
+
+
+## Updating submodules
+
 Generate python changes:
 
 ```shell
 cd bitnet
 pip install -r requirements.txt
 python setup_env.py --hf-repo HF1BitLLM/Llama3-8B-1.58-100B-tokens -q i2_s
-```
-
-Apply patches from the python generation:
-
-```shell
-./patches/apply.sh
 ```
 
 Create patches after you're done generating python changes:
@@ -36,3 +41,12 @@ Clean git commits from submodules to start over or run commits:
 ```shell
 cargo clean && BUILD_DEBUG=true CMAKE_VERBOSE=true cargo build
 ```
+
+
+## License
+
+[MIT](/LICENSE)
+
+## Copyright
+
+© 2024, Eugene Hauptmann
