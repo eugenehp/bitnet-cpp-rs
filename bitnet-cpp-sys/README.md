@@ -7,7 +7,11 @@ See [bitnet-cpp](https://crates.io/crates/bitnet-cpp) for a safe API.
 
 ## Development
 
+```shell
+cargo clean && cargo build
+```
 
+## How to manually apply generated patches
 
 Apply patches from the python generation:
 

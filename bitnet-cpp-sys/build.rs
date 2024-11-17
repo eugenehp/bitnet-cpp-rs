@@ -3,8 +3,6 @@ use glob::glob;
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::thread::sleep;
-use std::time::Duration;
 
 macro_rules! debug_log {
     ($($arg:tt)*) => {
@@ -171,9 +169,7 @@ const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_ARM_TL1", "ON");
 #[cfg(target_arch = "x86_64")]
 const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_X86_TL2", "ON");
 
-fn main2() {
-    // apply patches
-
+fn build() {
     let target = env::var("TARGET").unwrap();
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
@@ -415,5 +411,6 @@ fn main2() {
 
 fn main() {
     run_shell("patches/apply.sh".into());
+    build();
     run_shell("patches/clean.sh".into());
 }
