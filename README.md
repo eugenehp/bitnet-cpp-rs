@@ -22,7 +22,7 @@ See [bitnet-cpp-sys](https://github.com/eugenehp/bitnet-cpp-rs/tree/main/bitnet-
 |---|---|---|---|
 | ✅ | ❌ | MacOS | tested fully on Apple Silicon macs | 
 | ⚠️ | ❌ | Linux | should test on ARM based linux | 
-| ❓ | ❌ | Windows | we're using patches, so *-sys build won't work yet | 
+| ❓ | ❌ | Windows | should test on ARM based windows | 
 
 ## Thanks
 
