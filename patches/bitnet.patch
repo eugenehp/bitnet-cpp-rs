@@ -21,10 +21,10 @@ index 6ddaa51..93b1e92 100644
 \ No newline at end of file
 diff --git a/include/bitnet-lut-kernels.h b/include/bitnet-lut-kernels.h
 new file mode 100644
-index 0000000..e505e9f
+index 0000000..9099e09
 --- /dev/null
 +++ b/include/bitnet-lut-kernels.h
-@@ -0,0 +1,1568 @@
+@@ -0,0 +1,1567 @@
 +#if defined(GGML_BITNET_ARM_TL1)
 +#include "ggml-bitnet.h"
 +#define GGML_BITNET_MAX_NODES 8192
@@ -231,7 +231,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 4; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -245,7 +245,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -259,7 +259,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_1.val[0];
 +            vec_c[1] += vec_v_left_1.val[1];
 +            vec_c[1] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -273,7 +273,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_2.val[0];
 +            vec_c[3] += vec_v_left_2.val[1];
 +            vec_c[3] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -287,7 +287,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_3.val[0];
 +            vec_c[3] += vec_v_left_3.val[1];
 +            vec_c[3] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -349,7 +349,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 2; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -363,7 +363,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -377,7 +377,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_1.val[0];
 +            vec_c[3] += vec_v_left_1.val[1];
 +            vec_c[3] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -391,7 +391,7 @@ index 0000000..e505e9f
 +            vec_c[4] += vec_v_right_2.val[0];
 +            vec_c[5] += vec_v_left_2.val[1];
 +            vec_c[5] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -405,7 +405,7 @@ index 0000000..e505e9f
 +            vec_c[6] += vec_v_right_3.val[0];
 +            vec_c[7] += vec_v_left_3.val[1];
 +            vec_c[7] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -483,7 +483,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 4; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -497,7 +497,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -511,7 +511,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_1.val[0];
 +            vec_c[1] += vec_v_left_1.val[1];
 +            vec_c[1] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -525,7 +525,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_2.val[0];
 +            vec_c[3] += vec_v_left_2.val[1];
 +            vec_c[3] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -539,7 +539,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_3.val[0];
 +            vec_c[3] += vec_v_left_3.val[1];
 +            vec_c[3] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -601,7 +601,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 2; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -615,7 +615,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -629,7 +629,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_1.val[0];
 +            vec_c[3] += vec_v_left_1.val[1];
 +            vec_c[3] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -643,7 +643,7 @@ index 0000000..e505e9f
 +            vec_c[4] += vec_v_right_2.val[0];
 +            vec_c[5] += vec_v_left_2.val[1];
 +            vec_c[5] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -657,7 +657,7 @@ index 0000000..e505e9f
 +            vec_c[6] += vec_v_right_3.val[0];
 +            vec_c[7] += vec_v_left_3.val[1];
 +            vec_c[7] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -715,7 +715,7 @@ index 0000000..e505e9f
 +void preprocessor_k(void* B, void* LUT_Scales, void* QLUT) {{
 +  partial_max_reset((&(((bitnet_float_type*)LUT_Scales)[0])));
 +  per_tensor_quant(K, (&(((bitnet_float_type*)LUT_Scales)[0])), (&(((bitnet_float_type*)B)[0])));
-+  
++
 +  lut_ctor<K>((&(((int8_t*)QLUT)[0])), (&(((bitnet_float_type*)B)[0])), (&(((bitnet_float_type*)LUT_Scales)[0])));
 +}}
 +void ggml_preprocessor(int m, int k, void* B, void* LUT_Scales, void* QLUT) {
@@ -1001,7 +1001,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 4; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -1015,7 +1015,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -1029,7 +1029,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_1.val[0];
 +            vec_c[1] += vec_v_left_1.val[1];
 +            vec_c[1] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -1043,7 +1043,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_2.val[0];
 +            vec_c[3] += vec_v_left_2.val[1];
 +            vec_c[3] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -1057,7 +1057,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_3.val[0];
 +            vec_c[3] += vec_v_left_3.val[1];
 +            vec_c[3] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -1119,7 +1119,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 2; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -1133,7 +1133,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -1147,7 +1147,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_1.val[0];
 +            vec_c[3] += vec_v_left_1.val[1];
 +            vec_c[3] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -1161,7 +1161,7 @@ index 0000000..e505e9f
 +            vec_c[4] += vec_v_right_2.val[0];
 +            vec_c[5] += vec_v_left_2.val[1];
 +            vec_c[5] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -1175,7 +1175,7 @@ index 0000000..e505e9f
 +            vec_c[6] += vec_v_right_3.val[0];
 +            vec_c[7] += vec_v_left_3.val[1];
 +            vec_c[7] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -1253,7 +1253,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 4; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -1267,7 +1267,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -1281,7 +1281,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_1.val[0];
 +            vec_c[1] += vec_v_left_1.val[1];
 +            vec_c[1] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -1295,7 +1295,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_2.val[0];
 +            vec_c[3] += vec_v_left_2.val[1];
 +            vec_c[3] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -1309,7 +1309,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_3.val[0];
 +            vec_c[3] += vec_v_left_3.val[1];
 +            vec_c[3] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -1371,7 +1371,7 @@ index 0000000..e505e9f
 +
 +#pragma unroll
 +        for (int k = 0; k < KK / 2; k++) {
-+            
++
 +            uint8x16_t vec_a_0 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 0 * 16);
 +            uint8x16_t vec_a0_top = vshrq_n_u8(vec_a_0, 4);
 +            uint8x16_t vec_a0_bot = vandq_u8(vec_a_0, vec_mask);
@@ -1385,7 +1385,7 @@ index 0000000..e505e9f
 +            vec_c[0] += vec_v_right_0.val[0];
 +            vec_c[1] += vec_v_left_0.val[1];
 +            vec_c[1] += vec_v_right_0.val[1];
-+        
++
 +            uint8x16_t vec_a_1 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 1 * 16);
 +            uint8x16_t vec_a1_top = vshrq_n_u8(vec_a_1, 4);
 +            uint8x16_t vec_a1_bot = vandq_u8(vec_a_1, vec_mask);
@@ -1399,7 +1399,7 @@ index 0000000..e505e9f
 +            vec_c[2] += vec_v_right_1.val[0];
 +            vec_c[3] += vec_v_left_1.val[1];
 +            vec_c[3] += vec_v_right_1.val[1];
-+        
++
 +            uint8x16_t vec_a_2 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 2 * 16);
 +            uint8x16_t vec_a2_top = vshrq_n_u8(vec_a_2, 4);
 +            uint8x16_t vec_a2_bot = vandq_u8(vec_a_2, vec_mask);
@@ -1413,7 +1413,7 @@ index 0000000..e505e9f
 +            vec_c[4] += vec_v_right_2.val[0];
 +            vec_c[5] += vec_v_left_2.val[1];
 +            vec_c[5] += vec_v_right_2.val[1];
-+        
++
 +            uint8x16_t vec_a_3 = vld1q_u8(a + i * KK / 2 + k * 32 * 2 + 3 * 16);
 +            uint8x16_t vec_a3_top = vshrq_n_u8(vec_a_3, 4);
 +            uint8x16_t vec_a3_bot = vandq_u8(vec_a_3, vec_mask);
@@ -1427,7 +1427,7 @@ index 0000000..e505e9f
 +            vec_c[6] += vec_v_right_3.val[0];
 +            vec_c[7] += vec_v_left_3.val[1];
 +            vec_c[7] += vec_v_right_3.val[1];
-+        
++
 +       }
 +
 +        int32x4_t vec_v_bot_low_low_0 = vmovl_s16(vget_low_s16(vec_c[0]));
@@ -1485,7 +1485,7 @@ index 0000000..e505e9f
 +void preprocessor_k(void* B, void* LUT_Scales, void* QLUT) {{
 +  partial_max_reset((&(((bitnet_float_type*)LUT_Scales)[0])));
 +  per_tensor_quant(K, (&(((bitnet_float_type*)LUT_Scales)[0])), (&(((bitnet_float_type*)B)[0])));
-+  
++
 +  lut_ctor<K>((&(((int8_t*)QLUT)[0])), (&(((bitnet_float_type*)B)[0])), (&(((bitnet_float_type*)LUT_Scales)[0])));
 +}}
 +void ggml_preprocessor(int m, int k, void* B, void* LUT_Scales, void* QLUT) {
@@ -1592,13 +1592,12 @@ index 0000000..e505e9f
 +bm = 128
 +bk = 64
 +bmm = 64
-+
 diff --git a/include/kernel_config.ini b/include/kernel_config.ini
 new file mode 100644
-index 0000000..a69fdcc
+index 0000000..bb759fc
 --- /dev/null
 +++ b/include/kernel_config.ini
-@@ -0,0 +1,112 @@
+@@ -0,0 +1,111 @@
 +[Kernels_0]
 +m = 14336
 +k = 4096
@@ -1710,4 +1709,3 @@ index 0000000..a69fdcc
 +bm = 128
 +bk = 64
 +bmm = 64
-+
