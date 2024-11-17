@@ -465,7 +465,7 @@ fn apply_patch(patch_name: &str, output_dir: &str) {
     patches.iter().for_each(|patch| {
         let path = patch.new.path.to_string().replace("b/", ""); // "b/ggml/CMakeLists.txt" -> "ggml/CMakeLists.txt"
         let path = root.join(path);
-        println!("cargo:warning=[DEBUG] {:?}", path);
+        // println!("cargo:warning=[DEBUG] {:?}", path);
         let old_content = match fs::read_to_string(path.clone()) {
             Ok(content) => content,
             Err(_) => "".into(),

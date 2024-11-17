@@ -7,6 +7,8 @@ See [bitnet-cpp](https://crates.io/crates/bitnet-cpp) for a safe API.
 
 ## Development
 
+Atomic git patches are incorporated into the `build.rs`, but if you want to dive deeper, see the patch generation below.
+
 ```shell
 cargo clean && cargo build
 ```
@@ -18,7 +20,6 @@ Apply patches from the python generation:
 ```shell
 ./patches/apply.sh
 ```
-
 
 ## Updating submodules
 
