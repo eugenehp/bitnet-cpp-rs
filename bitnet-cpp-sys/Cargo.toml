@@ -24,6 +24,7 @@ include = [
     "wrapper.h",
     "build.rs",
     "/src",
+    "/patches",
     
     "/bitnet/src",
     "/bitnet/include/*",
