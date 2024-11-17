@@ -441,17 +441,14 @@ fn build() {
     }
 }
 
-fn get_patches() {
+fn apply_patches(patch_name: &str, output_dir: &str) {
     let src_dir = get_src_dir();
     let patches_dir = src_dir.join("patches");
 
-    let path = patches_dir.join("llama.cpp.patch");
-    let content = fs::read_to_string(path).unwrap();
-
-    let llama_cpp_root = src_dir.join("bitnet/3rdparty/llama.cpp");
+    let content = fs::read_to_string(patches_dir.join(patch_name)).unwrap();
+    let llama_cpp_root = src_dir.join(output_dir);
 
     let patches: Vec<Patch<'_>> = Patch::from_multiple(&content).unwrap();
-
     patches.iter().for_each(|patch| {
         let path = patch.new.path.to_string().replace("b/", ""); // "b/ggml/CMakeLists.txt" -> "ggml/CMakeLists.txt"
         let path = llama_cpp_root.join(path);
@@ -461,6 +458,10 @@ fn get_patches() {
     });
 
     // println!("cargo:warning=[DEBUG] {:?}", patches);
+}
+
+fn get_patches() {
+    apply_patches("llama.cpp.patch", "bitnet/3rdparty/llama.cpp")
 }
 
 fn main() {
