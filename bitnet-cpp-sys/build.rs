@@ -15,10 +15,12 @@ macro_rules! debug_log {
     };
 }
 
-const CARGO_PKG_NAME: &str = env!("CARGO_PKG_NAME");
+// const CARGO_PKG_NAME: &str = env!("CARGO_PKG_NAME");
+const CARGO_PKG_NAME: &str = "bitnet-cpp-sys"; // this has to be hardcoded to enable `bitnet-cpp` build
 const CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 const BITNET_DIR: &str = "bitnet";
 const LLAMA_CPP_DIR: &str = "bitnet/3rdparty/llama.cpp";
+const PATCHES_DIR: &str = "patches";
 
 #[cfg(target_os = "windows")]
 const OS_EXTRA_ARGS: [(&str, &str); 1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
@@ -210,11 +212,15 @@ fn macos_link_search_path() -> Option<String> {
 fn build() {
     let target = env::var("TARGET").unwrap();
     let out_dir = get_out_dir();
+    let src_dir = get_src_dir();
 
     let target_dir = get_cargo_target_dir().unwrap();
 
     let bitnet_dst = out_dir.join(BITNET_DIR);
     let bitnet_src = Path::new(&CARGO_MANIFEST_DIR).join(BITNET_DIR);
+
+    let patches_dst = out_dir.join(PATCHES_DIR);
+    let patches_src = Path::new(&src_dir).join(PATCHES_DIR);
 
     let build_shared_libs = cfg!(feature = "cuda") || cfg!(feature = "dynamic-link");
 
@@ -231,6 +237,15 @@ fn build() {
     debug_log!("TARGET_DIR: {}", target_dir.display());
     debug_log!("OUT_DIR: {}", out_dir.display());
     debug_log!("BUILD_SHARED: {}", build_shared_libs);
+
+    if !patches_dst.exists() {
+        debug_log!(
+            "Copy {} to {}",
+            patches_src.display(),
+            patches_dst.display()
+        );
+        copy_folder(&patches_src, &patches_dst);
+    }
 
     if !bitnet_dst.exists() {
         debug_log!("Copy {} to {}", bitnet_src.display(), bitnet_dst.display());
@@ -451,10 +466,11 @@ fn build() {
 }
 
 fn apply_patch(patch_name: &str, output_dir: &str) {
-    let src_dir = get_src_dir();
+    // let src_dir = get_src_dir();
     let out_dir = get_out_dir();
 
-    let patches_dir = src_dir.join("patches");
+    // let patches_dir = src_dir.join("patches");
+    let patches_dir = out_dir.join(PATCHES_DIR);
 
     let content = fs::read_to_string(patches_dir.join(patch_name)).unwrap();
     // uncomment this if you want to see atomic commits in the main git repo
