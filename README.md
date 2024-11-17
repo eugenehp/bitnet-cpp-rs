@@ -4,27 +4,7 @@ Almost safe wrapper for [BitNet-cpp](https://github.com/microsoft/BitNet) based 
 
 ## Development
 
-Add bitnet submodule:
-
-```shell
-cd bitnet-cpp-sys
-git submodule add --name bitnet --depth 10 -- https://github.com/microsoft/BitNet.git bitnet 
-```
-
-Pull recursive updates:
-
-```shell
-cd bitnet-cpp-sys/bitnet
-git submodule update --init --recursive
-```
-
-Configure using python:
-
-```shell
-cd bitnet-cpp-sys/bitnet
-pip install -r requirements.txt
-python setup_env.py --hf-repo HF1BitLLM/Llama3-8B-1.58-100B-tokens -q i2_s # only needs gen_code() 
-```
+See [bitnet-cpp-sys](https://github.com/eugenehp/bitnet-cpp-rs/tree/main/bitnet-cpp-sys)
 
 ## Roadmap
 
@@ -35,6 +15,14 @@ python setup_env.py --hf-repo HF1BitLLM/Llama3-8B-1.58-100B-tokens -q i2_s # onl
 - [ ] replace all remaining python from BitNet repo
 - [ ] add better division between `arm64` and `x86_64`
 - [ ] move python code generation into `patch` files
+
+## Platform support
+
+| arm64 | x64 | OS | comments |
+|---|---|---|---|
+| ✅ | ❌ | MacOS | tested fully on Apple Silicon macs | 
+| ⚠️ | ❌ | Linux | should test on ARM based linux | 
+| ❓ | ❌ | Windows | we're using patches, so *-sys build won't work yet | 
 
 ## Thanks
 
