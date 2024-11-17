@@ -3,6 +3,8 @@ use glob::glob;
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::thread::sleep;
+use std::time::Duration;
 
 macro_rules! debug_log {
     ($($arg:tt)*) => {
@@ -29,6 +31,7 @@ fn run_shell(path: PathBuf) {
     // println!("cargo:warning=[DEBUG] {:?}", program);
     let mut child = Command::new(program).spawn().unwrap();
     child.wait().unwrap();
+    sleep(Duration::from_secs(1));
 }
 
 fn get_cargo_target_dir() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
