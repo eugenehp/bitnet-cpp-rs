@@ -13,3 +13,4 @@ index 1b425ede..6fd942a4 100644
  
  set_target_properties(ggml PROPERTIES PUBLIC_HEADER "${GGML_PUBLIC_HEADERS}")
  #if (GGML_METAL)
+ 
