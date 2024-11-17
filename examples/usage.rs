@@ -3,23 +3,24 @@
 //! This is just about the smallest possible way to do inference. To fetch a model from hugging face:
 //!
 //! ```console
-//! git clone --recursive https://github.com/eugenehp/bitnet-cpp-rs
-//! cd bitnet-cpp-rs/examples/usage
-//! wget https://huggingface.co/eugenehp/Llama3-8B-1.58-100B-tokens-GGUF/blob/main/ggml-model-i2_s.gguf
-//! cargo run --example usage -- ggml-model-i2_s.gguf
+//! git clone --recursive https://github.com/eugenehp/llama-cpp-rs
+//! cd llama-cpp-rs/examples/usage
+//! wget https://huggingface.co/Qwen/Qwen2-1.5B-Instruct-GGUF/resolve/main/qwen2-1_5b-instruct-q4_0.gguf
+//! cargo run --example usage -- qwen2-1_5b-instruct-q4_0.gguf
+//! ```
+//!
+//! returns
+//!
+//! ```console
+//! I'm here to help! Are you a programmer?
 //! ```
 use bitnet_cpp::context::params::LlamaContextParams;
+use bitnet_cpp::context::sampler::LlamaSampler;
 use bitnet_cpp::llama_backend::LlamaBackend;
 use bitnet_cpp::llama_batch::LlamaBatch;
 use bitnet_cpp::model::params::LlamaModelParams;
 use bitnet_cpp::model::LlamaModel;
 use bitnet_cpp::model::{AddBos, Special};
-use bitnet_cpp::token::data_array::LlamaTokenDataArray;
-use bitnet_cpp::token::LlamaToken;
-use bitnet_cpp_sys::{
-    llama_sampler_apply, llama_sampler_chain_add, llama_sampler_chain_default_params,
-    llama_sampler_chain_init, llama_sampler_init_greedy, llama_sampler_sample,
-};
 use std::io::Write;
 
 #[allow(clippy::cast_possible_wrap, clippy::cast_possible_truncation)]
@@ -58,40 +59,13 @@ fn main() {
 
     // The `Decoder`
     let mut decoder = encoding_rs::UTF_8.new_decoder();
-    let params = unsafe { llama_sampler_chain_default_params() };
-    let mut smpl = unsafe { llama_sampler_chain_init(params) };
-
-    // https://github.com/ggerganov/llama.cpp/blob/master/examples/simple/simple.cpp#L124
-    unsafe {
-        llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
-    };
+    let sampler = LlamaSampler::default();
 
     while n_cur <= n_len {
         // sample the next token
         {
-            let candidates = ctx.candidates_ith(batch.n_tokens() - 1);
-
-            let mut candidates_p = LlamaTokenDataArray::from_iter(candidates, false);
-
             // sample the most likely token
-            // let new_token_id = ctx.sample_token_greedy(candidates_p);
-            // new_token_id = llama_sampler_sample(smpl, ctx, -1);
-            let mut data_arr = bitnet_cpp_sys::llama_token_data_array {
-                data: candidates_p
-                    .data
-                    .as_mut_ptr()
-                    .cast::<bitnet_cpp_sys::llama_token_data>(),
-                size: candidates_p.data.len(),
-                selected: -1,
-                sorted: candidates_p.sorted,
-            };
-
-            unsafe {
-                llama_sampler_apply(smpl, &mut data_arr);
-            };
-
-            let new_token = unsafe { llama_sampler_sample(smpl, ctx.context.as_ptr(), -1) };
-            let new_token_id = LlamaToken::new(new_token);
+            let new_token_id = sampler.sample(&ctx, batch.n_tokens() - 1);
 
             // is it an end of stream?
             if new_token_id == model.token_eos() {

@@ -1,19 +1,33 @@
 [package]
 name = "bitnet-cpp-sys"
 description = "Low Level Bindings to bitnet.cpp"
-version = "0.0.1"
+version = "0.0.4"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/eugenehp/bitnet-cpp-rs"
+categories = [
+    "api-bindings",
+    "development-tools::ffi",
+    "development-tools::build-utils",
+    "science",
+]
+keywords = [
+    "machine-learning",
+    "api-bindings",
+    "bitnet",
+    "bitnet-cpp",
+    "inference",
+]
 links = "llama"
 
 include = [
     "wrapper.h",
     "build.rs",
     "/src",
+    "/patches",
     
     "/bitnet/src",
-    "/bitnet/include",
+    "/bitnet/include/*",
     "/bitnet/preset_kernels",
     "/bitnet/utils",
     "/bitnet/CMakeLists.txt",
@@ -28,10 +42,11 @@ include = [
     "/bitnet/3rdparty/llama.cpp/src/*.h",
     "/bitnet/3rdparty/llama.cpp/src/*.cpp",
     
-    "/bitnet/3rdparty/llama.cpp/examples", # TODO(eugene): remove this from the crate
+    # "/bitnet/3rdparty/llama.cpp/examples",
 
     "/bitnet/3rdparty/llama.cpp/convert_hf_to_gguf.py",
 
+    "/bitnet/3rdparty/llama.cpp/common/build-info.cpp",
     "/bitnet/3rdparty/llama.cpp/common/build-info.cpp.in",
 
     "/bitnet/3rdparty/llama.cpp/ggml/src/ggml-cuda.cu",
@@ -68,6 +83,7 @@ bindgen = { workspace = true }
 cc = { workspace = true, features = ["parallel"] }
 cmake = "0.1"
 glob = "0.3.1"
+patch-apply= "0.8.3"
 
 [features]
 cuda = []

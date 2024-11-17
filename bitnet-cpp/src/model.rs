@@ -127,8 +127,7 @@ impl LlamaModel {
     /// Get the decoder start token token.
     #[must_use]
     pub fn decode_start_token(&self) -> LlamaToken {
-        let token =
-            unsafe { bitnet_cpp_sys::llama_model_decoder_start_token(self.model.as_ptr()) };
+        let token = unsafe { bitnet_cpp_sys::llama_model_decoder_start_token(self.model.as_ptr()) };
         LlamaToken(token)
     }
 

@@ -5,6 +5,8 @@ use std::num::NonZeroI32;
 use std::ptr::NonNull;
 use std::slice;
 
+use perf::PerfContextData;
+
 use crate::llama_batch::LlamaBatch;
 use crate::model::{LlamaLoraAdapter, LlamaModel};
 // use crate::timing::LlamaTimings;
@@ -17,16 +19,14 @@ use crate::{
 
 pub mod kv_cache;
 pub mod params;
-pub mod sample;
+pub mod perf;
+pub mod sampler;
 pub mod session;
-
 
 /// Safe wrapper around `llama_context`.
 #[allow(clippy::module_name_repetitions)]
 pub struct LlamaContext<'a> {
-    // pub(crate) context: NonNull<bitnet_cpp_sys::llama_context>,
-    // TODO(eugene): fix me, added new sampler that uses context
-    pub context: NonNull<bitnet_cpp_sys::llama_context>,
+    pub(crate) context: NonNull<bitnet_cpp_sys::llama_context>,
     /// a reference to the contexts model.
     pub model: &'a LlamaModel,
     initialized_logits: Vec<i32>,
@@ -269,15 +269,18 @@ impl<'model> LlamaContext<'model> {
     }
 
     /// Reset the timings for the context.
-    // pub fn reset_timings(&mut self) {
-    //     unsafe { bitnet_cpp_sys::llama_reset_timings(self.context.as_ptr()) }
-    // }
+    pub fn reset_timings(&mut self) {
+        unsafe { bitnet_cpp_sys::ggml_time_init() }
+    }
 
     /// Returns the timings for the context.
-    // pub fn timings(&mut self) -> LlamaTimings {
-    //     let timings = unsafe { bitnet_cpp_sys::llama_get_timings(self.context.as_ptr()) };
-    //     LlamaTimings { timings }
-    // }
+    pub fn timings(&mut self) -> PerfContextData {
+        let perf_context_data =
+            unsafe { bitnet_cpp_sys::llama_perf_context(self.context.as_ptr()) };
+        PerfContextData {
+            perf_context_data: perf_context_data,
+        }
+    }
 
     /// Sets a lora adapter.
     ///

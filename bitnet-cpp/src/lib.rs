@@ -7,7 +7,7 @@
 //!
 //! # Examples
 //!
-//! - [simple](https://github.com/utilityai/llama-cpp-rs/tree/main/simple)
+//! - [simple](https://github.com/eugenehp/llama-cpp-rs/tree/main/simple)
 //!
 //! # Feature Flags
 //!
@@ -23,11 +23,9 @@ use std::path::PathBuf;
 use std::string::FromUtf8Error;
 
 pub mod context;
-pub mod grammar;
 pub mod llama_backend;
 pub mod llama_batch;
 pub mod model;
-pub mod timing;
 pub mod token;
 pub mod token_type;
 
