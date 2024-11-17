@@ -1,6 +1,7 @@
 #!/bin/sh
 
-DIR="$( cd "$( dirname "$0" )" && pwd )"
+PATCHES="$( cd "$( dirname "$0" )" && pwd )"
+DIR="$PATCHES/.."
 
 cd "$DIR/bitnet/3rdparty/llama.cpp"
 git reset --hard
