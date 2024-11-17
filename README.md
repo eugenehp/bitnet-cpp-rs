@@ -8,13 +8,13 @@ See [bitnet-cpp-sys](https://github.com/eugenehp/bitnet-cpp-rs/tree/main/bitnet-
 
 ## Roadmap
 
-- [ ] minimize crate size
+- [x] minimize crate size
 - [x] rewrite sampler [PR 9294](https://github.com/ggerganov/llama.cpp/pull/9294)
 - [ ] look into Metal implementation of MatMul kernerls for BitNet
 - [ ] add more examples
-- [ ] replace all remaining python from BitNet repo
+- [x] replace all remaining python from BitNet repo
 - [ ] add better division between `arm64` and `x86_64`
-- [ ] move python code generation into `patch` files
+- [x] move python code generation into `patch` files
 
 ## Platform support
 
