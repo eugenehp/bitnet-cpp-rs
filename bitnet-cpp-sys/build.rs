@@ -16,6 +16,30 @@ macro_rules! debug_log {
 
 const CARGO_PKG_NAME: &str = env!("CARGO_PKG_NAME");
 const CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
+const BITNET_DIR: &str = "bitnet";
+
+#[cfg(target_os = "windows")]
+const OS_EXTRA_ARGS: [(&str, &str); 1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
+
+#[cfg(target_os = "linux")]
+const OS_EXTRA_ARGS: [(&str, &str); 2] = [
+    ("CMAKE_C_COMPILER", "clang"),
+    ("CMAKE_CXX_COMPILER", "clang++"),
+];
+
+#[cfg(target_arch = "aarch64")]
+const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_ARM_TL1", "ON");
+
+#[cfg(target_arch = "x86_64")]
+const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_X86_TL2", "ON");
+
+#[allow(dead_code)]
+fn get_root_dir() -> String {
+    match CARGO_MANIFEST_DIR.contains("/target/") {
+        true => CARGO_MANIFEST_DIR.split("/target/").next().unwrap().into(),
+        false => CARGO_MANIFEST_DIR.into(),
+    }
+}
 
 fn run_shell(path: PathBuf) {
     let patches_dir = match CARGO_MANIFEST_DIR.contains("/target/") {
@@ -164,23 +188,6 @@ fn macos_link_search_path() -> Option<String> {
     None
 }
 
-const BITNET_DIR: &str = "bitnet";
-
-#[cfg(target_os = "windows")]
-const OS_EXTRA_ARGS: [(&str, &str); 1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
-
-#[cfg(target_os = "linux")]
-const OS_EXTRA_ARGS: [(&str, &str); 2] = [
-    ("CMAKE_C_COMPILER", "clang"),
-    ("CMAKE_CXX_COMPILER", "clang++"),
-];
-
-#[cfg(target_arch = "aarch64")]
-const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_ARM_TL1", "ON");
-
-#[cfg(target_arch = "x86_64")]
-const COMPILER_EXTRA_ARGS: (&str, &str) = ("BITNET_X86_TL2", "ON");
-
 fn build() {
     let target = env::var("TARGET").unwrap();
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
@@ -189,9 +196,6 @@ fn build() {
 
     let bitnet_dst = out_dir.join(BITNET_DIR);
     let bitnet_src = Path::new(&CARGO_MANIFEST_DIR).join(BITNET_DIR);
-
-    let git_dst = out_dir.join("./.git");
-    let git_src = Path::new(&CARGO_MANIFEST_DIR).join("./.git");
 
     let build_shared_libs = cfg!(feature = "cuda") || cfg!(feature = "dynamic-link");
 
@@ -212,11 +216,6 @@ fn build() {
     if !bitnet_dst.exists() {
         debug_log!("Copy {} to {}", bitnet_src.display(), bitnet_dst.display());
         copy_folder(&bitnet_src, &bitnet_dst);
-    }
-
-    if !git_dst.exists() {
-        debug_log!("Copy {} to {}", git_src.display(), git_dst.display());
-        copy_folder(&git_src, &git_dst);
     }
 
     // Speed up build
