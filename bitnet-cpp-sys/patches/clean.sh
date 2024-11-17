@@ -2,11 +2,11 @@
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-cd "$DIR/bitnet-cpp-sys/bitnet/3rdparty/llama.cpp"
+cd "$DIR/bitnet/3rdparty/llama.cpp"
 git reset --hard
 git clean -f -d
 
-cd "$DIR/bitnet-cpp-sys/bitnet"
+cd "$DIR/bitnet"
 git reset --hard
 git clean -f -d
 
