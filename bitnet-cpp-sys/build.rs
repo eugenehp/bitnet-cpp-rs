@@ -18,6 +18,7 @@ macro_rules! debug_log {
 const CARGO_PKG_NAME: &str = env!("CARGO_PKG_NAME");
 const CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 const BITNET_DIR: &str = "bitnet";
+const LLAMA_CPP_DIR: &str = "bitnet/3rdparty/llama.cpp";
 
 #[cfg(target_os = "windows")]
 const OS_EXTRA_ARGS: [(&str, &str); 1] = [("-T", "ClangCL")]; // these are cflags, so should be defined as .cflag("-foo")
@@ -53,6 +54,12 @@ fn get_src_dir() -> PathBuf {
     }
 }
 
+#[allow(dead_code)]
+fn get_out_dir() -> PathBuf {
+    std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap())
+}
+
+#[allow(dead_code)]
 fn run_shell(path: PathBuf) {
     let patches_dir = match CARGO_MANIFEST_DIR.contains("/target/") {
         true => {
@@ -71,7 +78,7 @@ fn run_shell(path: PathBuf) {
 }
 
 fn get_cargo_target_dir() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
-    let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR")?);
+    let out_dir = get_out_dir();
     let profile = std::env::var("PROFILE")?;
     let mut target_dir = None;
     let mut sub_path = out_dir.as_path();
@@ -202,7 +209,7 @@ fn macos_link_search_path() -> Option<String> {
 
 fn build() {
     let target = env::var("TARGET").unwrap();
-    let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_dir = get_out_dir();
 
     let target_dir = get_cargo_target_dir().unwrap();
 
@@ -228,6 +235,8 @@ fn build() {
     if !bitnet_dst.exists() {
         debug_log!("Copy {} to {}", bitnet_src.display(), bitnet_dst.display());
         copy_folder(&bitnet_src, &bitnet_dst);
+        // applies git patches when folder is copied, run `cargo clean` to run it again
+        apply_patches();
     }
 
     // Speed up build
@@ -441,18 +450,22 @@ fn build() {
     }
 }
 
-fn apply_patches(patch_name: &str, output_dir: &str) {
+fn apply_patch(patch_name: &str, output_dir: &str) {
     let src_dir = get_src_dir();
+    let out_dir = get_out_dir();
+
     let patches_dir = src_dir.join("patches");
 
     let content = fs::read_to_string(patches_dir.join(patch_name)).unwrap();
-    let root = src_dir.join(output_dir);
+    // uncomment this if you want to see atomic commits in the main git repo
+    // let root = src_dir.join(output_dir);
+    let root = out_dir.join(output_dir);
 
     let patches: Vec<Patch<'_>> = Patch::from_multiple(&content).unwrap();
     patches.iter().for_each(|patch| {
         let path = patch.new.path.to_string().replace("b/", ""); // "b/ggml/CMakeLists.txt" -> "ggml/CMakeLists.txt"
         let path = root.join(path);
-        // println!("cargo:warning=[DEBUG] {:?}", path);
+        println!("cargo:warning=[DEBUG] {:?}", path);
         let old_content = match fs::read_to_string(path.clone()) {
             Ok(content) => content,
             Err(_) => "".into(),
@@ -462,11 +475,15 @@ fn apply_patches(patch_name: &str, output_dir: &str) {
     });
 }
 
+fn apply_patches() {
+    apply_patch("llama.cpp.patch", LLAMA_CPP_DIR);
+    apply_patch("bitnet.patch", BITNET_DIR);
+}
+
 fn main() {
     // TODO: apply patches on the features level of architecture and quantization type
     // run_shell("patches/apply.sh".into());
-    apply_patches("llama.cpp.patch", "bitnet/3rdparty/llama.cpp");
-    apply_patches("bitnet.patch", "bitnet");
+    // apply_patches();
     build();
-    run_shell("patches/clean.sh".into());
+    // run_shell("patches/clean.sh".into());
 }
