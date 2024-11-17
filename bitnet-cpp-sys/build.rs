@@ -31,7 +31,7 @@ fn run_shell(path: PathBuf) {
     // println!("cargo:warning=[DEBUG] {:?}", program);
     let mut child = Command::new(program).spawn().unwrap();
     child.wait().unwrap();
-    sleep(Duration::from_secs(1));
+    sleep(Duration::from_secs(3));
 }
 
 fn get_cargo_target_dir() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
