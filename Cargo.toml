@@ -6,10 +6,10 @@ members = [
 ]
 
 [workspace.dependencies]
-thiserror = "1"
+thiserror = "2.0.3"
 tracing = "0.1"
 bindgen = "0.70.1"
-cc = "1.1.31"
+cc = "1.2.1"
 encoding_rs = "0.8.34"
 
 [workspace.lints.rust]
