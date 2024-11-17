@@ -12,14 +12,23 @@ macro_rules! debug_log {
     };
 }
 
+const CARGO_PKG_NAME: &str = env!("CARGO_PKG_NAME");
+
 fn run_shell(path: PathBuf) {
-    let dir = std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
+    let cargo_manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+    let cargo_manifest_dir = match cargo_manifest_dir.contains("/target/") {
+        true => {
+            // when `cargo publish` the CARGO_MANIFEST_DIR returns `bitnet-cpp-rs/target/package/bitnet-cpp-sys-<version>`
+            let dir = cargo_manifest_dir.split("/target/").next().unwrap();
+            format!("{dir}/{CARGO_PKG_NAME}")
+        }
+        false => cargo_manifest_dir,
+    };
+    let dir = std::path::PathBuf::from(cargo_manifest_dir);
     let program = dir.join(path);
     // println!("cargo:warning=[DEBUG] {:?}", program);
     let mut child = Command::new(program).spawn().unwrap();
     child.wait().unwrap();
-
-    // sleep(Duration::from_secs(1));
 }
 
 fn get_cargo_target_dir() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
