@@ -7,6 +7,14 @@ See [bitnet-cpp](https://crates.io/crates/bitnet-cpp) for a safe API.
 
 ## Development
 
+Generate python changes:
+
+```shell
+cd bitnet
+pip install -r requirements.txt
+python setup_env.py --hf-repo HF1BitLLM/Llama3-8B-1.58-100B-tokens -q i2_s
+```
+
 Apply patches from the python generation:
 
 ```shell
