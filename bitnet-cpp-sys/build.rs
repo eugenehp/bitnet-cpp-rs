@@ -1,6 +1,6 @@
 use cmake::Config;
 use glob::glob;
-use patch_apply::{apply, Line, Patch};
+use patch_apply::{apply, Patch};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::thread::sleep;
@@ -462,15 +462,11 @@ fn apply_patches(patch_name: &str, output_dir: &str) {
     });
 }
 
-fn get_patches() {
-    apply_patches("llama.cpp.patch", "bitnet/3rdparty/llama.cpp");
-    apply_patches("bitnet.patch", "bitnet");
-}
-
 fn main() {
     // TODO: apply patches on the features level of architecture and quantization type
     // run_shell("patches/apply.sh".into());
-    get_patches();
-    // build();
-    // run_shell("patches/clean.sh".into());
+    apply_patches("llama.cpp.patch", "bitnet/3rdparty/llama.cpp");
+    apply_patches("bitnet.patch", "bitnet");
+    build();
+    run_shell("patches/clean.sh".into());
 }
