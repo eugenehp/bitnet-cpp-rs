@@ -16,8 +16,6 @@ keywords = [
     "api-bindings",
     "bitnet",
     "bitnet-cpp",
-    "llama",
-    "llama-cpp",
     "inference",
 ]
 
