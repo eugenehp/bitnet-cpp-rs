@@ -263,7 +263,6 @@ fn build() {
     debug_log!("OUT_DIR: {}", out_dir.display());
     debug_log!("BUILD_SHARED: {}", build_shared_libs);
 
-    install_dependencies();
     if !patches_dst.exists() {
         debug_log!(
             "Copy {} to {}",
@@ -274,6 +273,9 @@ fn build() {
     }
 
     if !bitnet_dst.exists() {
+        debug_log!("Do `pip install` of dependencies");
+        install_dependencies();
+
         debug_log!("Copy {} to {}", bitnet_src.display(), bitnet_dst.display());
         copy_folder(&bitnet_src, &bitnet_dst);
         // applies git patches when folder is copied, run `cargo clean` to run it again
