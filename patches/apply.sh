@@ -14,7 +14,7 @@ git apply --whitespace=fix "$DIR/bitnet.patch"
 # patch include/bitnet-lut-kernels.h "$DIR/bitnet-lut-kernels.patch"
 
 
-# cd "$DIR/../bitnet-cpp-sys/bitnet/3rdparty/llama.cpp"
-# git reset --hard # reset state of the git submodule
-# git clean -f -d # cleans untracked files
-# git apply "$DIR/llama.cpp.patch"
+cd "$DIR/../bitnet-cpp-sys/bitnet/3rdparty/llama.cpp"
+git reset --hard # reset state of the git submodule
+git clean -f -d # cleans untracked files
+git apply "$DIR/llama.cpp.patch"
