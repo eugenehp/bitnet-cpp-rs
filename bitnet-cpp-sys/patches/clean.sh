@@ -8,6 +8,6 @@ git reset --hard origin/HEAD
 git clean -f -d
 
 cd "$DIR/bitnet"
-git reset --hard origin/HEAD
+git reset --hard
 git clean -f -d
 

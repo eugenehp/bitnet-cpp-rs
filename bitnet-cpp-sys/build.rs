@@ -1,10 +1,11 @@
 use cmake::Config;
 use glob::glob;
-use std::env;
+use patch_apply::{apply, Line, Patch};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::thread::sleep;
 use std::time::Duration;
+use std::{env, fs};
 
 macro_rules! debug_log {
     ($($arg:tt)*) => {
@@ -41,6 +42,17 @@ fn get_root_dir() -> String {
     }
 }
 
+#[allow(dead_code)]
+fn get_src_dir() -> PathBuf {
+    match CARGO_MANIFEST_DIR.contains("/target/") {
+        true => {
+            let path: PathBuf = CARGO_MANIFEST_DIR.split("/target/").next().unwrap().into();
+            path.join(CARGO_PKG_NAME)
+        }
+        false => CARGO_MANIFEST_DIR.into(),
+    }
+}
+
 fn run_shell(path: PathBuf) {
     let patches_dir = match CARGO_MANIFEST_DIR.contains("/target/") {
         true => {
@@ -55,7 +67,7 @@ fn run_shell(path: PathBuf) {
     // println!("cargo:warning=[DEBUG] {:?}", program);
     let mut child = Command::new(program).spawn().unwrap();
     child.wait().unwrap();
-    sleep(Duration::from_secs(3));
+    sleep(Duration::from_secs(5));
 }
 
 fn get_cargo_target_dir() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
@@ -429,9 +441,31 @@ fn build() {
     }
 }
 
+fn get_patches() {
+    let src_dir = get_src_dir();
+    let patches_dir = src_dir.join("patches");
+
+    let path = patches_dir.join("llama.cpp.patch");
+    let content = fs::read_to_string(path).unwrap();
+
+    let llama_cpp_root = src_dir.join("bitnet/3rdparty/llama.cpp");
+
+    let patches: Vec<Patch<'_>> = Patch::from_multiple(&content).unwrap();
+
+    let patch = patches.first().unwrap().clone();
+    let path = patch.new.path.to_string().replace("b/", ""); // "b/ggml/CMakeLists.txt" -> "ggml/CMakeLists.txt"
+    let path = llama_cpp_root.join(path);
+    let old_content = fs::read_to_string(path.clone()).unwrap();
+    let patched_content = apply(old_content, patch);
+    fs::write(path, patched_content).unwrap();
+
+    // println!("cargo:warning=[DEBUG] {:?}", patches);
+}
+
 fn main() {
     // TODO: apply patches on the features level of architecture and quantization type
-    run_shell("patches/apply.sh".into());
-    build();
-    run_shell("patches/clean.sh".into());
+    // run_shell("patches/apply.sh".into());
+    get_patches();
+    // build();
+    // run_shell("patches/clean.sh".into());
 }
