@@ -29,11 +29,12 @@ python setup_env.py --hf-repo HF1BitLLM/Llama3-8B-1.58-100B-tokens -q i2_s # onl
 ## Roadmap
 
 - [ ] minimize crate size
-- [ ] rewrite sampler [PR 9294](https://github.com/ggerganov/llama.cpp/pull/9294)
+- [x] rewrite sampler [PR 9294](https://github.com/ggerganov/llama.cpp/pull/9294)
 - [ ] look into Metal implementation of MatMul kernerls for BitNet
 - [ ] add more examples
 - [ ] replace all remaining python from BitNet repo
 - [ ] add better division between `arm64` and `x86_64`
+- [ ] move python code generation into `patch` files
 
 ## Thanks
 
