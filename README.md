@@ -34,4 +34,4 @@ Heavily inspired by [llama-cpp-rs](https://github.com/utilityai/llama-cpp-rs)
 
 ## Copyright
 
-© 2024, Eugene Hauptmann
+© 2024-2025, Eugene Hauptmann
